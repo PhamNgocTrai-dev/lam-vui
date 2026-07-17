@@ -1,63 +1,517 @@
-document.documentElement.classList.add('js-motion');
-const CATALOG_IMAGES={1:'assets/p1-catalog.jpeg',2:'assets/p2-catalog.png',3:'assets/p3-catalog.png',4:'assets/p4-catalog.png',5:'assets/p5-catalog.png',6:'assets/p6-catalog.jpeg',7:'assets/p7-catalog.jpeg',8:'assets/p8-catalog.jpeg',9:'assets/p9-catalog.jpeg',10:'assets/p10-catalog.jpeg',11:'assets/p11-catalog.jpeg',12:'assets/p12-catalog.jpeg',13:'assets/p13-catalog.jpeg'};
-const SAMPLE_PRICES=[4.9,5.5,.12,1.8,2.2,.45,3.5,2.9,1.6,8,18,42,.8];
-const CATEGORIES=['tableware','tableware','growing','growing','growing','growing','growing','growing','landscape','landscape','landscape','landscape','landscape'];
-const STORAGE={products:'eco2go-products-v2',locale:'eco2go-locale',session:'eco2go-admin-demo'};
-const app=document.getElementById('app');
-const statusRegion=document.getElementById('app-status');
-const arrow='<span aria-hidden="true">↗</span>';
+document.documentElement.classList.add("js-motion");
+const CATALOG_IMAGES = {
+  1: "assets/p1-catalog.jpeg",
+  2: "assets/p2-catalog.png",
+  3: "assets/p3-catalog.png",
+  4: "assets/p4-catalog.png",
+  5: "assets/p5-catalog.png",
+  6: "assets/p6-catalog.jpeg",
+  7: "assets/p7-catalog.jpeg",
+  8: "assets/p8-catalog.jpeg",
+  9: "assets/p9-catalog.jpeg",
+  10: "assets/p10-catalog.jpeg",
+  11: "assets/p11-catalog.jpeg",
+  12: "assets/p12-catalog.jpeg",
+  13: "assets/p13-catalog.jpeg",
+};
+const SAMPLE_PRICES = [
+  4.9, 5.5, 0.12, 1.8, 2.2, 0.45, 3.5, 2.9, 1.6, 8, 18, 42, 0.8,
+];
+const CATEGORIES = [
+  "tableware",
+  "tableware",
+  "growing",
+  "growing",
+  "growing",
+  "growing",
+  "growing",
+  "growing",
+  "landscape",
+  "landscape",
+  "landscape",
+  "landscape",
+  "landscape",
+];
+const STORAGE = {
+  products: "eco2go-products-v2",
+  locale: "eco2go-locale",
+  session: "eco2go-admin-demo",
+};
+const app = document.getElementById("app");
+const statusRegion = document.getElementById("app-status");
+const arrow = '<span aria-hidden="true">↗</span>';
 
-function clone(value){return JSON.parse(JSON.stringify(value));}
-function escapeHtml(value=''){return String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));}
-function normalizeProduct(product,index){
-  const english=PRODUCT_EN[product.slug]||{};
-  return {id:product.id,slug:product.slug,img:CATALOG_IMAGES[product.id]||product.img,startingPriceUsd:SAMPLE_PRICES[index]||1,category:CATEGORIES[index]||'growing',featured:index<6,sortOrder:index+1,translations:{vi:{name:product.name,tagline:product.tagline,short:product.short,desc:product.desc,advantages:clone(product.advantages),specs:clone(product.specs)},en:{name:product.name,tagline:english.tagline||product.tagline,short:english.short||product.short,desc:english.desc||product.desc,advantages:clone(english.advantages||product.advantages),specs:clone(english.specs||product.specs)}}};
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
 }
-const DEFAULT_PRODUCTS=PRODUCTS.map(normalizeProduct);
-function loadProducts(){try{const saved=JSON.parse(localStorage.getItem(STORAGE.products));return Array.isArray(saved)&&saved.length?saved:clone(DEFAULT_PRODUCTS);}catch{return clone(DEFAULT_PRODUCTS);}}
-const state={locale:['vi','en'].includes(localStorage.getItem(STORAGE.locale))?localStorage.getItem(STORAGE.locale):'vi',products:loadProducts(),isAdmin:localStorage.getItem(STORAGE.session)==='admin'};
-function t(path,params={}){return getText(state.locale,path,params);}
-function localize(product){return {...product,...(product.translations?.[state.locale]||product.translations?.vi||{})};}
-function formatPrice(value){return new Intl.NumberFormat(state.locale==='vi'?'vi-VN':'en-US',{style:'currency',currency:'USD',minimumFractionDigits:value<1?2:0,maximumFractionDigits:2}).format(Number(value)||0);}
-function saveProducts(){localStorage.setItem(STORAGE.products,JSON.stringify(state.products));}
-function announce(message){statusRegion.textContent='';requestAnimationFrame(()=>statusRegion.textContent=message);}
-function setDocumentLanguage(){document.documentElement.lang=state.locale;document.title=t('meta.title');document.querySelector('meta[name="description"]')?.setAttribute('content',t('meta.description'));}
-function applyShellTranslations(){
-  document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=t(node.dataset.i18n));
-  document.querySelectorAll('[data-i18n-title]').forEach(node=>{node.title=t(node.dataset.i18nTitle);node.setAttribute('aria-label',t(node.dataset.i18nTitle));});
-  document.querySelector('.menu-toggle')?.setAttribute('aria-label',state.locale==='vi'?'Mở menu':'Open menu');
-  document.querySelector('.links')?.setAttribute('aria-label',state.locale==='vi'?'Điều hướng chính':'Main navigation');
-  document.getElementById('languageSelect').value=state.locale;
+function escapeHtml(value = "") {
+  return String(value).replace(
+    /[&<>'"]/g,
+    (char) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[
+        char
+      ],
+  );
+}
+function normalizeProduct(product, index) {
+  const english = PRODUCT_EN[product.slug] || {};
+  return {
+    id: product.id,
+    slug: product.slug,
+    img: CATALOG_IMAGES[product.id] || product.img,
+    startingPriceUsd: SAMPLE_PRICES[index] || 1,
+    category: CATEGORIES[index] || "growing",
+    featured: index < 6,
+    sortOrder: index + 1,
+    translations: {
+      vi: {
+        name: product.name,
+        tagline: product.tagline,
+        short: product.short,
+        desc: product.desc,
+        advantages: clone(product.advantages),
+        specs: clone(product.specs),
+      },
+      en: {
+        name: product.name,
+        tagline: english.tagline || product.tagline,
+        short: english.short || product.short,
+        desc: english.desc || product.desc,
+        advantages: clone(english.advantages || product.advantages),
+        specs: clone(english.specs || product.specs),
+      },
+    },
+  };
+}
+const DEFAULT_PRODUCTS = PRODUCTS.map(normalizeProduct);
+function loadProducts() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE.products));
+    return Array.isArray(saved) && saved.length
+      ? saved
+      : clone(DEFAULT_PRODUCTS);
+  } catch {
+    return clone(DEFAULT_PRODUCTS);
+  }
+}
+const state = {
+  locale: ["vi", "en"].includes(localStorage.getItem(STORAGE.locale))
+    ? localStorage.getItem(STORAGE.locale)
+    : "vi",
+  products: loadProducts(),
+  isAdmin: localStorage.getItem(STORAGE.session) === "admin",
+};
+function t(path, params = {}) {
+  return getText(state.locale, path, params);
+}
+function localize(product) {
+  return {
+    ...product,
+    ...(product.translations?.[state.locale] || product.translations?.vi || {}),
+  };
+}
+function formatPrice(value) {
+  return new Intl.NumberFormat(state.locale === "vi" ? "vi-VN" : "en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: value < 1 ? 2 : 0,
+    maximumFractionDigits: 2,
+  }).format(Number(value) || 0);
+}
+function saveProducts() {
+  localStorage.setItem(STORAGE.products, JSON.stringify(state.products));
+}
+function announce(message) {
+  statusRegion.textContent = "";
+  requestAnimationFrame(() => (statusRegion.textContent = message));
+}
+function setDocumentLanguage() {
+  document.documentElement.lang = state.locale;
+  document.title = t("meta.title");
+  document
+    .querySelector('meta[name="description"]')
+    ?.setAttribute("content", t("meta.description"));
+}
+function applyShellTranslations() {
+  document
+    .querySelectorAll("[data-i18n]")
+    .forEach((node) => (node.textContent = t(node.dataset.i18n)));
+  document.querySelectorAll("[data-i18n-title]").forEach((node) => {
+    node.title = t(node.dataset.i18nTitle);
+    node.setAttribute("aria-label", t(node.dataset.i18nTitle));
+  });
+  document
+    .querySelector(".menu-toggle")
+    ?.setAttribute(
+      "aria-label",
+      state.locale === "vi" ? "Mở menu" : "Open menu",
+    );
+  document
+    .querySelector(".links")
+    ?.setAttribute(
+      "aria-label",
+      state.locale === "vi" ? "Điều hướng chính" : "Main navigation",
+    );
+  document.getElementById("languageSelect").value = state.locale;
   setDocumentLanguage();
 }
-function productCard(product){const item=localize(product);return `<article class="p-card reveal" data-goto="product/${escapeHtml(product.slug)}" tabindex="0" aria-label="${escapeHtml(item.name)}"><div class="thumb"><span class="idx">${String(product.id).padStart(2,'0')}</span><img src="${escapeHtml(product.img)}" alt="${escapeHtml(item.name)}"></div><div class="p-body"><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.short)}</p><div class="price-line"><span>${t('common.from')}</span><strong>${formatPrice(product.startingPriceUsd)}</strong><small>${t('common.samplePrice')}</small></div><span class="p-link">${t('common.view')} ${arrow}</span></div></article>`;}
-function renderHome(){
-  const h=UI_TEXT[state.locale].home;const featured=state.products.filter(product=>product.featured).sort((a,b)=>a.sortOrder-b.sortOrder).slice(0,6);const count=state.products.length;
-  return `<section class="hero route-enter" id="home"><div class="wrap"><div class="hero-copy"><span class="eyebrow">Eco2go Vietnam · Since 2017</span><h1>Natural<br><em>materials,</em><br>better living.</h1><p>${h.heroText}</p><div class="hero-actions"><a class="btn btn-primary" href="#products">${t('home.explore',{count})} ${arrow}</a><a class="btn btn-outline" href="#contact">${t('common.quote')}</a></div><div class="hero-meta"><div><strong>10+</strong><span>${h.years}</span></div><div><strong>${count}</strong><span>${h.lines}</span></div><div><strong>100%</strong><span>${h.natural}</span></div></div></div><div class="hero-visual"><img class="catalog-photo" src="assets/p1-catalog.jpeg" alt="Eco2go coconut shell bowls"><div class="hero-stamp"><div><strong>01</strong>From nature<br>to table</div></div></div></div></section>
+function productCard(product) {
+  const item = localize(product);
+  return `<article class="p-card reveal" data-goto="product/${escapeHtml(product.slug)}" tabindex="0" aria-label="${escapeHtml(item.name)}"><div class="thumb"><span class="idx">${String(product.id).padStart(2, "0")}</span><img src="${escapeHtml(product.img)}" alt="${escapeHtml(item.name)}"></div><div class="p-body"><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.short)}</p><div class="price-line"><span>${t("common.from")}</span><strong>${formatPrice(product.startingPriceUsd)}</strong><small>${t("common.samplePrice")}</small></div><span class="p-link">${t("common.view")} ${arrow}</span></div></article>`;
+}
+function renderHome() {
+  const h = UI_TEXT[state.locale].home;
+  const featured = state.products
+    .filter((product) => product.featured)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .slice(0, 6);
+  const count = state.products.length;
+  return `<section class="hero route-enter" id="home"><div class="wrap"><div class="hero-copy"><span class="eyebrow">Eco2go Vietnam · Since 2017</span><h1>Natural<br><em>materials,</em><br>better living.</h1><p>${h.heroText}</p><div class="hero-actions"><a class="btn btn-primary" href="#products">${t("home.explore", { count })} ${arrow}</a><a class="btn btn-outline" href="#contact">${t("common.quote")}</a></div><div class="hero-meta"><div><strong>10+</strong><span>${h.years}</span></div><div><strong>${count}</strong><span>${h.lines}</span></div><div><strong>100%</strong><span>${h.natural}</span></div></div></div><div class="hero-visual"><img class="catalog-photo" src="assets/p1-catalog.jpeg" alt="Eco2go coconut shell bowls"><div class="hero-stamp"><div><strong>01</strong>From nature<br>to table</div></div></div></div></section>
   <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>Recycled coconut shell</span><span>Biodegradable coir</span><span>Custom production</span><span>Made in Vietnam</span><span>Worldwide export</span><span>Recycled coconut shell</span><span>Biodegradable coir</span></div></div>
   <section class="section" id="story"><div class="wrap story-grid"><div class="story-image reveal"><img src="assets/p9-catalog.jpeg" alt="Natural coir material"></div><div class="story-copy reveal"><span class="eyebrow">Our story</span><h3>${h.storyTitle}</h3><p>${h.story1}</p><p>${h.story2}</p><a class="btn btn-primary" href="#products">${h.storyCta} ${arrow}</a></div></div></section>
-  <section class="section mint"><div class="wrap"><div class="section-head reveal"><span class="eyebrow">Why Eco2go</span><h2>${h.whyTitle}</h2></div><div class="principles stagger">${h.principles.map((item,index)=>`<div class="principle reveal"><b>0${index+1}</b><h3>${item[0]}</h3><p>${item[1]}</p></div>`).join('')}</div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head reveal"><span class="eyebrow">2026 collection</span><h2>${h.collectionTitle}</h2><p>${h.collectionText}</p></div><div class="category-strip stagger">${h.categories.map(item=>`<a class="category reveal" href="#products"><h3>${item[0]}</h3><p>${item[1]}</p></a>`).join('')}</div><div class="product-grid stagger">${featured.map(productCard).join('')}</div><div class="catalog-note reveal"><div><strong>${t('home.catalogNote',{count})}</strong><br>${h.customNote}</div><a class="btn btn-primary" href="#products">${t('common.all')} ${arrow}</a></div></div></section>
-  <section class="section contact" id="contact"><div class="wrap reveal"><div class="contact-row"><div class="section-head"><span class="eyebrow">Start a conversation</span><h2>${h.contactTitle}</h2><p>${h.contactText}</p></div><div><a class="btn btn-light" href="mailto:jeny@eco2go.vn?subject=${encodeURIComponent(t('common.quote'))}">${t('common.quote')} ${arrow}</a></div></div><div class="contact-details"><a href="tel:+84911585628">+84 911 585 628</a><a href="mailto:jeny@eco2go.vn">jeny@eco2go.vn</a><a href="https://eco2go.vn" target="_blank" rel="noopener noreferrer">eco2go.vn ↗</a></div></div></section>`;
+  <section class="section mint"><div class="wrap"><div class="section-head reveal"><span class="eyebrow">Why Eco2go</span><h2>${h.whyTitle}</h2></div><div class="principles stagger">${h.principles.map((item, index) => `<div class="principle reveal"><b>0${index + 1}</b><h3>${item[0]}</h3><p>${item[1]}</p></div>`).join("")}</div></div></section>
+  <section class="section"><div class="wrap"><div class="section-head reveal"><span class="eyebrow">2026 collection</span><h2>${h.collectionTitle}</h2><p>${h.collectionText}</p></div><div class="category-strip stagger">${h.categories.map((item) => `<a class="category reveal" href="#products"><h3>${item[0]}</h3><p>${item[1]}</p></a>`).join("")}</div><div class="product-grid stagger">${featured.map(productCard).join("")}</div><div class="catalog-note reveal"><div><strong>${t("home.catalogNote", { count })}</strong><br>${h.customNote}</div><a class="btn btn-primary" href="#products">${t("common.all")} ${arrow}</a></div></div></section>
+  <section class="section contact" id="contact"><div class="wrap reveal"><div class="contact-row"><div class="section-head"><span class="eyebrow">Start a conversation</span><h2>${h.contactTitle}</h2><p>${h.contactText}</p></div><div><a class="btn btn-light" href="mailto:jeny@eco2go.vn?subject=${encodeURIComponent(t("common.quote"))}">${t("common.quote")} ${arrow}</a></div></div><div class="contact-details"><a href="tel:+84911585628">+84 911 585 628</a><a href="mailto:jeny@eco2go.vn">jeny@eco2go.vn</a><a href="https://eco2go.vn" target="_blank" rel="noopener noreferrer">eco2go.vn ↗</a></div></div></section>`;
 }
-function filteredProducts(query=''){const normalized=query.trim().toLocaleLowerCase(state.locale);return state.products.filter(product=>{const item=localize(product);return !normalized||`${item.name} ${item.tagline} ${item.short} ${product.slug}`.toLocaleLowerCase(state.locale).includes(normalized);}).sort((a,b)=>a.sortOrder-b.sortOrder);}
-function renderProductGrid(query=''){const list=filteredProducts(query);return list.length?list.map(productCard).join(''):`<div class="empty-state">${t('products.empty')}</div>`;}
-function renderProducts(){const count=state.products.length;return `<div class="page-header wrap route-enter"><span class="eyebrow">${t('products.eyebrow')}</span><h1>${t('products.title',{count})}</h1><p>${t('products.intro')}</p><div class="search-row"><input id="searchInput" type="search" placeholder="${t('products.placeholder')}" autocomplete="off"></div></div><section class="section"><div class="wrap"><div class="product-grid stagger" id="productGrid">${renderProductGrid()}</div></div></section>`;}
-function renderDetail(slug){const product=state.products.find(item=>item.slug===slug);if(!product)return renderError('404');const item=localize(product);return `<section class="detail route-enter"><div class="wrap"><a class="eyebrow" href="#products">← ${t('common.back')}</a><div class="detail-grid"><div class="detail-image reveal"><img src="${escapeHtml(product.img)}" alt="${escapeHtml(item.name)}"></div><div class="reveal"><span class="eyebrow">${t('products.product')} ${String(product.id).padStart(2,'0')} / ${state.products.length}</span><h1>${escapeHtml(item.name)}</h1><p><strong>${escapeHtml(item.tagline)}</strong></p><div class="detail-price"><span>${t('common.from')}</span><strong>${formatPrice(product.startingPriceUsd)}</strong><small>${t('common.samplePrice')}</small></div><p>${escapeHtml(item.desc)}</p><ul class="adv-list">${item.advantages.map(value=>`<li>${escapeHtml(value)}</li>`).join('')}</ul><div class="hero-actions"><a class="btn btn-primary" href="mailto:jeny@eco2go.vn?subject=${encodeURIComponent(`${t('common.quote')} ${item.name}`)}">${t('common.quote')} ${arrow}</a><a class="btn" href="tel:+84911585628">${t('common.call')}</a></div></div></div><div class="specs reveal"><table><tbody>${item.specs.map(([key,value])=>`<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`).join('')}</tbody></table></div></div></section>`;}
-function renderError(code){const unauthorized=code==='401'||code==='403';return `<section class="error-page route-enter"><div class="error-shape">${code}</div><div class="error-content"><span class="eyebrow">Error ${code}</span><h1>${unauthorized?t('errors.unauthorizedTitle'):t('errors.notFoundTitle')}</h1><p>${unauthorized?t('errors.unauthorizedText'):t('errors.notFoundText')}</p><div class="hero-actions">${unauthorized?`<a class="btn btn-primary" href="#admin/login">${t('errors.goLogin')}</a>`:''}<a class="btn" href="#home">${t('errors.home')}</a></div></div></section>`;}
-function renderLogin(){return `<section class="admin-shell route-enter"><div class="login-card"><span class="eyebrow">Eco2go Admin</span><h1>${t('admin.loginTitle')}</h1><p>${t('admin.loginText')}</p><div class="demo-warning">${t('admin.demoWarning')}</div><form id="loginForm"><label>${t('admin.username')}<input name="username" autocomplete="username" required></label><label>${t('admin.password')}<input name="password" type="password" autocomplete="current-password" required></label><p id="loginError" class="form-error" role="alert"></p><button class="btn btn-primary" type="submit">${t('common.login')} ${arrow}</button></form></div></section>`;}
-function renderAdminList(){const rows=[...state.products].sort((a,b)=>a.sortOrder-b.sortOrder).map(product=>{const item=localize(product);return `<tr><td><img src="${escapeHtml(product.img)}" alt=""></td><td><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(product.slug)}</small></td><td>${formatPrice(product.startingPriceUsd)}</td><td>${escapeHtml(product.category)}</td><td><div class="admin-actions"><a class="mini-btn" href="#admin/products/${product.id}/edit">${t('common.edit')}</a><button class="mini-btn danger" data-delete="${product.id}">${t('common.remove')}</button></div></td></tr>`;}).join('');return `<section class="admin-shell admin-wide route-enter"><div class="admin-head"><div><span class="eyebrow">Eco2go Admin</span><h1>${t('admin.title')}</h1></div><div class="admin-head-actions"><a class="btn btn-primary" href="#admin/products/new">＋ ${t('admin.newProduct')}</a><button class="btn" id="resetProducts">${t('common.reset')}</button><button class="btn" id="logoutButton">${t('common.logout')}</button></div></div><div class="demo-warning">${t('admin.demoWarning')}</div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th></th><th>${t('admin.productList')}</th><th>USD</th><th>${t('admin.category')}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>`;}
-function textareaValue(values=[]){return values.join('\n');}function specsValue(values=[]){return values.map(([key,value])=>`${key} | ${value}`).join('\n');}
-function renderAdminForm(id){const editing=id!==null;const product=editing?state.products.find(item=>String(item.id)===String(id)):null;if(editing&&!product)return renderError('404');const value=product||{slug:'',img:'assets/p1-catalog.jpeg',startingPriceUsd:1,category:'growing',featured:false,sortOrder:state.products.length+1,translations:{vi:{name:'',tagline:'',short:'',desc:'',advantages:[],specs:[]},en:{name:'',tagline:'',short:'',desc:'',advantages:[],specs:[]}}};const vi=value.translations.vi,en=value.translations.en;return `<section class="admin-shell admin-wide route-enter"><div class="admin-head"><div><span class="eyebrow">Eco2go Admin</span><h1>${editing?t('common.edit'):t('admin.newProduct')}</h1></div><a class="btn" href="#admin/products">← ${t('common.cancel')}</a></div><form id="productForm" data-id="${editing?value.id:''}" class="product-form"><div class="form-grid"><label>${t('admin.slug')}<input name="slug" value="${escapeHtml(value.slug)}" pattern="[a-z0-9-]+" required></label><label>${t('admin.image')}<input name="img" value="${escapeHtml(value.img)}" required></label><label>${t('admin.price')}<input name="price" type="number" min="0.01" step="0.01" value="${value.startingPriceUsd}" required></label><label>${t('admin.category')}<select name="category"><option value="tableware" ${value.category==='tableware'?'selected':''}>Tableware</option><option value="growing" ${value.category==='growing'?'selected':''}>Grow & Garden</option><option value="landscape" ${value.category==='landscape'?'selected':''}>Landscape</option></select></label><label>${t('admin.sort')}<input name="sortOrder" type="number" min="1" value="${value.sortOrder}" required></label><label class="check-label"><input name="featured" type="checkbox" ${value.featured?'checked':''}> ${t('admin.featured')}</label></div><div class="locale-editors"><div class="locale-editor"><h2>Tiếng Việt</h2>${localeFields('vi',vi)}</div><div class="locale-editor"><h2>English</h2>${localeFields('en',en)}</div></div><p id="productError" class="form-error" role="alert"></p><div class="form-submit"><button class="btn btn-primary" type="submit">${t('common.save')} ${arrow}</button><a class="btn" href="#admin/products">${t('common.cancel')}</a></div></form></section>`;}
-function localeFields(locale,data){const suffix=locale==='vi'?'Vi':'En';return `<label>${t(`admin.name${suffix}`)}<input name="${locale}_name" value="${escapeHtml(data.name)}" required></label><label>${t(`admin.tagline${suffix}`)}<input name="${locale}_tagline" value="${escapeHtml(data.tagline)}" required></label><label>${t(`admin.short${suffix}`)}<textarea name="${locale}_short" required>${escapeHtml(data.short)}</textarea></label><label>${t(`admin.desc${suffix}`)}<textarea name="${locale}_desc" rows="5" required>${escapeHtml(data.desc)}</textarea></label><label>${t(`admin.advantages${suffix}`)}<textarea name="${locale}_advantages" rows="7" required>${escapeHtml(textareaValue(data.advantages))}</textarea></label><label>${t(`admin.specs${suffix}`)}<textarea name="${locale}_specs" rows="7" required>${escapeHtml(specsValue(data.specs))}</textarea></label>`;}
-function parseLines(value){return value.split('\n').map(item=>item.trim()).filter(Boolean);}function parseSpecs(value){return parseLines(value).map(line=>{const separator=line.indexOf('|');return separator<0?[line,'']:[line.slice(0,separator).trim(),line.slice(separator+1).trim()];}).filter(([key,value])=>key&&value);}
-function setNav(name){document.querySelectorAll('[data-nav]').forEach(link=>link.classList.toggle('on',link.dataset.nav===name));}
-function bindCards(){document.querySelectorAll('[data-goto]').forEach(card=>{const go=()=>location.hash=card.dataset.goto;card.addEventListener('click',go);card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();go();}});});}
-function bindSearch(){const input=document.getElementById('searchInput');if(!input)return;input.addEventListener('input',()=>{document.getElementById('productGrid').innerHTML=renderProductGrid(input.value);bindCards();initMotion();});}
-function bindLogin(){document.getElementById('loginForm')?.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const config=window.ADMIN_DEMO_CONFIG;const valid=config&&data.get('username')===config.username&&data.get('password')===config.password;if(!valid){document.getElementById('loginError').textContent=t('admin.invalid');return;}state.isAdmin=true;localStorage.setItem(STORAGE.session,'admin');location.hash='admin/products';});}
-function bindAdminList(){document.getElementById('logoutButton')?.addEventListener('click',()=>{state.isAdmin=false;localStorage.removeItem(STORAGE.session);location.hash='home';});document.getElementById('resetProducts')?.addEventListener('click',()=>{if(!confirm(t('admin.confirmReset')))return;state.products=clone(DEFAULT_PRODUCTS);saveProducts();announce(t('admin.resetDone'));route();});document.querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{if(!confirm(t('admin.confirmDelete')))return;state.products=state.products.filter(product=>String(product.id)!==button.dataset.delete);saveProducts();announce(t('admin.deleted'));route();}));}
-function bindAdminForm(){document.getElementById('productForm')?.addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;const data=new FormData(form);const id=form.dataset.id;const slug=String(data.get('slug')).trim();const price=Number(data.get('price'));const duplicate=state.products.some(product=>product.slug===slug&&String(product.id)!==id);const translations={};for(const locale of ['vi','en'])translations[locale]={name:String(data.get(`${locale}_name`)).trim(),tagline:String(data.get(`${locale}_tagline`)).trim(),short:String(data.get(`${locale}_short`)).trim(),desc:String(data.get(`${locale}_desc`)).trim(),advantages:parseLines(String(data.get(`${locale}_advantages`))),specs:parseSpecs(String(data.get(`${locale}_specs`)))};const invalid=!slug||!data.get('img')||!Number.isFinite(price)||price<=0||Object.values(translations).some(item=>!item.name||!item.tagline||!item.short||!item.desc||!item.advantages.length||!item.specs.length);const error=document.getElementById('productError');if(duplicate){error.textContent=t('admin.duplicate');return;}if(invalid){error.textContent=t('admin.required');return;}const existing=id?state.products.find(product=>String(product.id)===id):null;const product={id:existing?.id||Math.max(0,...state.products.map(item=>Number(item.id)||0))+1,slug,img:String(data.get('img')).trim(),startingPriceUsd:price,category:String(data.get('category')),featured:data.get('featured')==='on',sortOrder:Number(data.get('sortOrder'))||state.products.length+1,translations};if(existing)state.products=state.products.map(item=>item.id===existing.id?product:item);else state.products.push(product);saveProducts();announce(t('admin.saved'));location.hash='admin/products';});}
-function initMotion(){if(matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.reveal').forEach(node=>node.classList.add('is-visible'));return;}const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}}),{threshold:.12});document.querySelectorAll('.reveal').forEach((node,index)=>{node.style.setProperty('--delay',`${Math.min(index%6,5)*70}ms`);observer.observe(node);});}
-function route(){const hash=location.hash.slice(1)||'home';const parts=hash.split('/');const page=parts[0];let html;let nav='';if(page==='home'||page==='story'||page==='contact'){html=renderHome();nav=page;}else if(page==='products'){html=renderProducts();nav='products';}else if(page==='product'&&parts[1]){html=renderDetail(parts[1]);nav='products';}else if(page==='admin'){if(parts[1]==='login')html=state.isAdmin?renderAdminList():renderLogin();else if(!state.isAdmin)html=renderError('401');else if(parts[1]==='products'&&!parts[2])html=renderAdminList();else if(parts[1]==='products'&&parts[2]==='new')html=renderAdminForm(null);else if(parts[1]==='products'&&parts[3]==='edit')html=renderAdminForm(parts[2]);else html=renderError('404');}else if(page==='error'){html=renderError(parts[1]||'404');}else html=renderError('404');app.innerHTML=html;setNav(nav);bindCards();bindSearch();bindLogin();bindAdminList();bindAdminForm();initMotion();if(page==='story'||page==='contact')requestAnimationFrame(()=>document.getElementById(page)?.scrollIntoView({behavior:'smooth'}));else window.scrollTo({top:0,behavior:'instant'});}
-const menu=document.querySelector('.menu-toggle');menu.addEventListener('click',()=>{const links=document.querySelector('.links');const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));});document.querySelector('.links').addEventListener('click',()=>{document.querySelector('.links').classList.remove('open');menu.setAttribute('aria-expanded','false');});document.getElementById('languageSelect').addEventListener('change',event=>{state.locale=event.target.value;localStorage.setItem(STORAGE.locale,state.locale);applyShellTranslations();route();announce(state.locale==='vi'?'Đã chuyển sang tiếng Việt':'Switched to English');});
-applyShellTranslations();window.addEventListener('hashchange',route);window.addEventListener('DOMContentLoaded',route);
+function filteredProducts(query = "") {
+  const normalized = query.trim().toLocaleLowerCase(state.locale);
+  return state.products
+    .filter((product) => {
+      const item = localize(product);
+      return (
+        !normalized ||
+        `${item.name} ${item.tagline} ${item.short} ${product.slug}`
+          .toLocaleLowerCase(state.locale)
+          .includes(normalized)
+      );
+    })
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+}
+function renderProductGrid(query = "") {
+  const list = filteredProducts(query);
+  return list.length
+    ? list.map(productCard).join("")
+    : `<div class="empty-state">${t("products.empty")}</div>`;
+}
+function renderProducts() {
+  const count = state.products.length;
+  return `<div class="page-header wrap route-enter"><span class="eyebrow">${t("products.eyebrow")}</span><h1>${t("products.title", { count })}</h1><p>${t("products.intro")}</p><div class="search-row"><input id="searchInput" type="search" placeholder="${t("products.placeholder")}" autocomplete="off"></div></div><section class="section"><div class="wrap"><div class="product-grid stagger" id="productGrid">${renderProductGrid()}</div></div></section>`;
+}
+function renderDetail(slug) {
+  const product = state.products.find((item) => item.slug === slug);
+  if (!product) return renderError("404");
+  const item = localize(product);
+  return `<section class="detail route-enter"><div class="wrap"><a class="eyebrow" href="#products">← ${t("common.back")}</a><div class="detail-grid"><div class="detail-image reveal"><img src="${escapeHtml(product.img)}" alt="${escapeHtml(item.name)}"></div><div class="reveal"><span class="eyebrow">${t("products.product")} ${String(product.id).padStart(2, "0")} / ${state.products.length}</span><h1>${escapeHtml(item.name)}</h1><p><strong>${escapeHtml(item.tagline)}</strong></p><div class="detail-price"><span>${t("common.from")}</span><strong>${formatPrice(product.startingPriceUsd)}</strong><small>${t("common.samplePrice")}</small></div><p>${escapeHtml(item.desc)}</p><ul class="adv-list">${item.advantages.map((value) => `<li>${escapeHtml(value)}</li>`).join("")}</ul><div class="hero-actions"><a class="btn btn-primary" href="mailto:jeny@eco2go.vn?subject=${encodeURIComponent(`${t("common.quote")} ${item.name}`)}">${t("common.quote")} ${arrow}</a><a class="btn" href="tel:+84911585628">${t("common.call")}</a></div></div></div><div class="specs reveal"><table><tbody>${item.specs.map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`).join("")}</tbody></table></div></div></section>`;
+}
+function renderError(code) {
+  const unauthorized = code === "401" || code === "403";
+  return `<section class="error-page route-enter"><div class="error-shape">${code}</div><div class="error-content"><span class="eyebrow">Error ${code}</span><h1>${unauthorized ? t("errors.unauthorizedTitle") : t("errors.notFoundTitle")}</h1><p>${unauthorized ? t("errors.unauthorizedText") : t("errors.notFoundText")}</p><div class="hero-actions">${unauthorized ? `<a class="btn btn-primary" href="#admin/login">${t("errors.goLogin")}</a>` : ""}<a class="btn" href="#home">${t("errors.home")}</a></div></div></section>`;
+}
+function renderLogin() {
+  return `<section class="admin-shell route-enter"><div class="login-card"><span class="eyebrow">Eco2go Admin</span><h1>${t("admin.loginTitle")}</h1><p>${t("admin.loginText")}</p><form id="loginForm"><label>${t("admin.username")}<input name="username" autocomplete="username" required></label><label>${t("admin.password")}<input name="password" type="password" autocomplete="current-password" required></label><p id="loginError" class="form-error" role="alert"></p><button class="btn btn-primary" type="submit">${t("common.login")} ${arrow}</button></form></div></section>`;
+}
+function renderAdminList() {
+  const rows = [...state.products]
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((product) => {
+      const item = localize(product);
+      return `<tr><td><img src="${escapeHtml(product.img)}" alt=""></td><td><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(product.slug)}</small></td><td>${formatPrice(product.startingPriceUsd)}</td><td>${escapeHtml(product.category)}</td><td><div class="admin-actions"><a class="mini-btn" href="#admin/products/${product.id}/edit">${t("common.edit")}</a><button class="mini-btn danger" data-delete="${product.id}">${t("common.remove")}</button></div></td></tr>`;
+    })
+    .join("");
+  return `<section class="admin-shell admin-wide route-enter"><div class="admin-head"><div><span class="eyebrow">Eco2go Admin</span><h1>${t("admin.title")}</h1></div><div class="admin-head-actions"><a class="btn btn-primary" href="#admin/products/new">＋ ${t("admin.newProduct")}</a><button class="btn" id="resetProducts">${t("common.reset")}</button><button class="btn" id="logoutButton">${t("common.logout")}</button></div></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th></th><th>${t("admin.productList")}</th><th>USD</th><th>${t("admin.category")}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+}
+function textareaValue(values = []) {
+  return values.join("\n");
+}
+function specsValue(values = []) {
+  return values.map(([key, value]) => `${key} | ${value}`).join("\n");
+}
+function renderAdminForm(id) {
+  const editing = id !== null;
+  const product = editing
+    ? state.products.find((item) => String(item.id) === String(id))
+    : null;
+  if (editing && !product) return renderError("404");
+  const value = product || {
+    slug: "",
+    img: "assets/p1-catalog.jpeg",
+    startingPriceUsd: 1,
+    category: "growing",
+    featured: false,
+    sortOrder: state.products.length + 1,
+    translations: {
+      vi: {
+        name: "",
+        tagline: "",
+        short: "",
+        desc: "",
+        advantages: [],
+        specs: [],
+      },
+      en: {
+        name: "",
+        tagline: "",
+        short: "",
+        desc: "",
+        advantages: [],
+        specs: [],
+      },
+    },
+  };
+  const vi = value.translations.vi,
+    en = value.translations.en;
+  return `<section class="admin-shell admin-wide route-enter"><div class="admin-head"><div><span class="eyebrow">Eco2go Admin</span><h1>${editing ? t("common.edit") : t("admin.newProduct")}</h1></div><a class="btn" href="#admin/products">← ${t("common.cancel")}</a></div><form id="productForm" data-id="${editing ? value.id : ""}" class="product-form"><div class="form-grid"><label>${t("admin.slug")}<input name="slug" value="${escapeHtml(value.slug)}" pattern="[a-z0-9-]+" required></label><label>${t("admin.image")}<input name="img" value="${escapeHtml(value.img)}" required></label><label>${t("admin.price")}<input name="price" type="number" min="0.01" step="0.01" value="${value.startingPriceUsd}" required></label><label>${t("admin.category")}<select name="category"><option value="tableware" ${value.category === "tableware" ? "selected" : ""}>Tableware</option><option value="growing" ${value.category === "growing" ? "selected" : ""}>Grow & Garden</option><option value="landscape" ${value.category === "landscape" ? "selected" : ""}>Landscape</option></select></label><label>${t("admin.sort")}<input name="sortOrder" type="number" min="1" value="${value.sortOrder}" required></label><label class="check-label"><input name="featured" type="checkbox" ${value.featured ? "checked" : ""}> ${t("admin.featured")}</label></div><div class="locale-editors"><div class="locale-editor"><h2>Tiếng Việt</h2>${localeFields("vi", vi)}</div><div class="locale-editor"><h2>English</h2>${localeFields("en", en)}</div></div><p id="productError" class="form-error" role="alert"></p><div class="form-submit"><button class="btn btn-primary" type="submit">${t("common.save")} ${arrow}</button><a class="btn" href="#admin/products">${t("common.cancel")}</a></div></form></section>`;
+}
+function localeFields(locale, data) {
+  const suffix = locale === "vi" ? "Vi" : "En";
+  return `<label>${t(`admin.name${suffix}`)}<input name="${locale}_name" value="${escapeHtml(data.name)}" required></label><label>${t(`admin.tagline${suffix}`)}<input name="${locale}_tagline" value="${escapeHtml(data.tagline)}" required></label><label>${t(`admin.short${suffix}`)}<textarea name="${locale}_short" required>${escapeHtml(data.short)}</textarea></label><label>${t(`admin.desc${suffix}`)}<textarea name="${locale}_desc" rows="5" required>${escapeHtml(data.desc)}</textarea></label><label>${t(`admin.advantages${suffix}`)}<textarea name="${locale}_advantages" rows="7" required>${escapeHtml(textareaValue(data.advantages))}</textarea></label><label>${t(`admin.specs${suffix}`)}<textarea name="${locale}_specs" rows="7" required>${escapeHtml(specsValue(data.specs))}</textarea></label>`;
+}
+function parseLines(value) {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+function parseSpecs(value) {
+  return parseLines(value)
+    .map((line) => {
+      const separator = line.indexOf("|");
+      return separator < 0
+        ? [line, ""]
+        : [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
+    })
+    .filter(([key, value]) => key && value);
+}
+function setNav(name) {
+  document
+    .querySelectorAll("[data-nav]")
+    .forEach((link) => link.classList.toggle("on", link.dataset.nav === name));
+}
+function bindCards() {
+  document.querySelectorAll("[data-goto]").forEach((card) => {
+    const go = () => (location.hash = card.dataset.goto);
+    card.addEventListener("click", go);
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        go();
+      }
+    });
+  });
+}
+function bindSearch() {
+  const input = document.getElementById("searchInput");
+  if (!input) return;
+  input.addEventListener("input", () => {
+    document.getElementById("productGrid").innerHTML = renderProductGrid(
+      input.value,
+    );
+    bindCards();
+    initMotion();
+  });
+}
+function bindLogin() {
+  document.getElementById("loginForm")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const config = window.ADMIN_DEMO_CONFIG;
+    const valid =
+      config &&
+      data.get("username") === config.username &&
+      data.get("password") === config.password;
+    if (!valid) {
+      document.getElementById("loginError").textContent = t("admin.invalid");
+      return;
+    }
+    state.isAdmin = true;
+    localStorage.setItem(STORAGE.session, "admin");
+    location.hash = "admin/products";
+  });
+}
+function bindAdminList() {
+  document.getElementById("logoutButton")?.addEventListener("click", () => {
+    state.isAdmin = false;
+    localStorage.removeItem(STORAGE.session);
+    location.hash = "home";
+  });
+  document.getElementById("resetProducts")?.addEventListener("click", () => {
+    if (!confirm(t("admin.confirmReset"))) return;
+    state.products = clone(DEFAULT_PRODUCTS);
+    saveProducts();
+    announce(t("admin.resetDone"));
+    route();
+  });
+  document.querySelectorAll("[data-delete]").forEach((button) =>
+    button.addEventListener("click", () => {
+      if (!confirm(t("admin.confirmDelete"))) return;
+      state.products = state.products.filter(
+        (product) => String(product.id) !== button.dataset.delete,
+      );
+      saveProducts();
+      announce(t("admin.deleted"));
+      route();
+    }),
+  );
+}
+function bindAdminForm() {
+  document
+    .getElementById("productForm")
+    ?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      const id = form.dataset.id;
+      const slug = String(data.get("slug")).trim();
+      const price = Number(data.get("price"));
+      const duplicate = state.products.some(
+        (product) => product.slug === slug && String(product.id) !== id,
+      );
+      const translations = {};
+      for (const locale of ["vi", "en"])
+        translations[locale] = {
+          name: String(data.get(`${locale}_name`)).trim(),
+          tagline: String(data.get(`${locale}_tagline`)).trim(),
+          short: String(data.get(`${locale}_short`)).trim(),
+          desc: String(data.get(`${locale}_desc`)).trim(),
+          advantages: parseLines(String(data.get(`${locale}_advantages`))),
+          specs: parseSpecs(String(data.get(`${locale}_specs`))),
+        };
+      const invalid =
+        !slug ||
+        !data.get("img") ||
+        !Number.isFinite(price) ||
+        price <= 0 ||
+        Object.values(translations).some(
+          (item) =>
+            !item.name ||
+            !item.tagline ||
+            !item.short ||
+            !item.desc ||
+            !item.advantages.length ||
+            !item.specs.length,
+        );
+      const error = document.getElementById("productError");
+      if (duplicate) {
+        error.textContent = t("admin.duplicate");
+        return;
+      }
+      if (invalid) {
+        error.textContent = t("admin.required");
+        return;
+      }
+      const existing = id
+        ? state.products.find((product) => String(product.id) === id)
+        : null;
+      const product = {
+        id:
+          existing?.id ||
+          Math.max(0, ...state.products.map((item) => Number(item.id) || 0)) +
+            1,
+        slug,
+        img: String(data.get("img")).trim(),
+        startingPriceUsd: price,
+        category: String(data.get("category")),
+        featured: data.get("featured") === "on",
+        sortOrder: Number(data.get("sortOrder")) || state.products.length + 1,
+        translations,
+      };
+      if (existing)
+        state.products = state.products.map((item) =>
+          item.id === existing.id ? product : item,
+        );
+      else state.products.push(product);
+      saveProducts();
+      announce(t("admin.saved"));
+      location.hash = "admin/products";
+    });
+}
+function initMotion() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document
+      .querySelectorAll(".reveal")
+      .forEach((node) => node.classList.add("is-visible"));
+    return;
+  }
+  const observer = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }),
+    { threshold: 0.12 },
+  );
+  document.querySelectorAll(".reveal").forEach((node, index) => {
+    node.style.setProperty("--delay", `${Math.min(index % 6, 5) * 70}ms`);
+    observer.observe(node);
+  });
+}
+function route() {
+  const hash = location.hash.slice(1) || "home";
+  const parts = hash.split("/");
+  const page = parts[0];
+  let html;
+  let nav = "";
+  if (page === "home" || page === "story" || page === "contact") {
+    html = renderHome();
+    nav = page;
+  } else if (page === "products") {
+    html = renderProducts();
+    nav = "products";
+  } else if (page === "product" && parts[1]) {
+    html = renderDetail(parts[1]);
+    nav = "products";
+  } else if (page === "admin") {
+    if (parts[1] === "login")
+      html = state.isAdmin ? renderAdminList() : renderLogin();
+    else if (!state.isAdmin) html = renderError("401");
+    else if (parts[1] === "products" && !parts[2]) html = renderAdminList();
+    else if (parts[1] === "products" && parts[2] === "new")
+      html = renderAdminForm(null);
+    else if (parts[1] === "products" && parts[3] === "edit")
+      html = renderAdminForm(parts[2]);
+    else html = renderError("404");
+  } else if (page === "error") {
+    html = renderError(parts[1] || "404");
+  } else html = renderError("404");
+  app.innerHTML = html;
+  setNav(nav);
+  bindCards();
+  bindSearch();
+  bindLogin();
+  bindAdminList();
+  bindAdminForm();
+  initMotion();
+  if (page === "story" || page === "contact")
+    requestAnimationFrame(() =>
+      document.getElementById(page)?.scrollIntoView({ behavior: "smooth" }),
+    );
+  else window.scrollTo({ top: 0, behavior: "instant" });
+}
+const menu = document.querySelector(".menu-toggle");
+menu.addEventListener("click", () => {
+  const links = document.querySelector(".links");
+  const open = links.classList.toggle("open");
+  menu.setAttribute("aria-expanded", String(open));
+});
+document.querySelector(".links").addEventListener("click", () => {
+  document.querySelector(".links").classList.remove("open");
+  menu.setAttribute("aria-expanded", "false");
+});
+document
+  .getElementById("languageSelect")
+  .addEventListener("change", (event) => {
+    state.locale = event.target.value;
+    localStorage.setItem(STORAGE.locale, state.locale);
+    applyShellTranslations();
+    route();
+    announce(
+      state.locale === "vi"
+        ? "Đã chuyển sang tiếng Việt"
+        : "Switched to English",
+    );
+  });
+applyShellTranslations();
+window.addEventListener("hashchange", route);
+window.addEventListener("DOMContentLoaded", route);

@@ -19,7 +19,7 @@ yarn-error.log*
 .env.*
 !.env.example
 
-.catalog 2026.pdf
+CATALOG 2026.pdf
 .catalog-analysis/
 
 # Local-only demo admin credentials
