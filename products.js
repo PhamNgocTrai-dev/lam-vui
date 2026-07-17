@@ -2,7 +2,7 @@
 const PRODUCTS = [
   {
     id:1, slug:'coconut-shell-bowl', name:'Coconut Shell Bowl', tagline:'Chén gáo dừa tự nhiên',
-    img:'assets/p1-coconut-shell-bowl.jpg',
+    img:'assets/p1-catalog.jpeg',
     short:'Chén ăn làm từ gáo dừa tái chế, thủ công và độc bản cho mỗi sản phẩm.',
     desc:'Được làm từ gáo dừa tái chế, Coconut Shell Bowl là lựa chọn bền vững, tái sử dụng và thân thiện với môi trường thay thế cho bát đĩa thông thường. Mỗi chiếc chén được chế tác thủ công với hình dáng độc đáo, phù hợp cho smoothie bowl, salad, trái cây, tráng miệng và kem — mang phong cách nhiệt đới tự nhiên cho mọi bữa ăn.',
     advantages:['100% tự nhiên & bền vững','Thủ công từ gáo dừa tái chế','Nhẹ, bền và tái sử dụng được','An toàn thực phẩm, dễ vệ sinh','Hình dáng & vân gỗ tự nhiên độc bản','Có thể phân hủy sinh học, không nhựa','Khắc logo theo yêu cầu'],

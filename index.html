@@ -1,79 +1,54 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eco2go Vietnam — Sản phẩm thiên nhiên từ dừa &amp; xơ dừa</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Eco2go Vietnam — sản phẩm tự nhiên từ gáo dừa, xơ dừa và tre cho không gian sống xanh.">
+  <title>Eco2go Vietnam — Natural materials, better living</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- signature clip-path definition: irregular coconut-shell edge -->
-<svg width="0" height="0" style="position:absolute">
-  <defs>
-    <clipPath id="huskClip" clipPathUnits="objectBoundingBox">
-      <path d="M0.5,0.02 C0.68,0.0 0.86,0.06 0.94,0.22 C1.02,0.36 0.98,0.5 0.99,0.62
-               C1.0,0.78 0.9,0.9 0.75,0.95 C0.62,1.0 0.5,0.98 0.36,0.99
-               C0.2,1.0 0.06,0.9 0.03,0.74 C0.0,0.6 0.05,0.5 0.02,0.36
-               C-0.01,0.2 0.1,0.06 0.28,0.03 C0.36,0.01 0.42,0.04 0.5,0.02 Z"/>
-    </clipPath>
-  </defs>
-</svg>
-
-<header class="site">
-  <div class="nav">
-    <a href="#home" class="brand">
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="brand" href="#home" aria-label="Eco2go Vietnam home">
         <img src="assets/logo-mark.jpg" alt="Eco2go Vietnam">
-    </a>
-    <nav class="links">
-      <a href="#home" data-nav="home">Trang chủ</a>
-      <a href="#products" data-nav="products">Sản phẩm</a>
-      <a href="#about" data-nav="about">Về chúng tôi</a>
-      <a href="#contact" data-nav="contact">Liên hệ</a>
-    </nav>
-    <a href="#contact" class="cta-small">Nhận báo giá</a>
-  </div>
-</header>
-
-<main id="app"></main>
-
-<footer>
-  <div class="wrap">
-    <div>
-      <div class="brand-foot">
-          <img src="assets/logo-mark.jpg" alt="Eco2go Vietnam">
+      </a>
+      <button class="menu-toggle" aria-label="Mở menu" aria-expanded="false">☰</button>
+      <nav class="links" aria-label="Điều hướng chính">
+        <a href="#home" data-nav="home" data-i18n="nav.home">Trang chủ</a>
+        <a href="#products" data-nav="products" data-i18n="nav.products">Danh mục</a>
+        <a href="#story" data-nav="story" data-i18n="nav.story">Câu chuyện</a>
+        <a href="#contact" data-nav="contact" data-i18n="nav.contact">Liên hệ</a>
+      </nav>
+      <div class="nav-tools">
+        <label class="language-control">
+          <span class="sr-only" data-i18n="nav.language">Ngôn ngữ</span>
+          <select id="languageSelect" aria-label="Ngôn ngữ">
+            <option value="vi">VI</option>
+            <option value="en">EN</option>
+          </select>
+        </label>
+        <a href="#admin/login" class="admin-link" data-i18n-title="nav.admin" title="Quản trị" aria-label="Quản trị">◇</a>
+        <a href="#contact" class="nav-cta"><span data-i18n="nav.catalog">Nhận catalogue</span> <span>↗</span></a>
       </div>
-      <p>Từ năm 2017, chúng tôi xuất khẩu các sản phẩm thiên nhiên làm từ gáo dừa, xơ dừa và tre — mang chất liệu bền vững của Việt Nam đến với thế giới.</p>
     </div>
-    <div>
-      <h4>Liên hệ</h4>
-      <ul>
-        <li>+84 911 585 628</li>
-        <li>eco2go.vn</li>
-        <li>jeny@eco2go.vn</li>
-      </ul>
+  </header>
+  <div id="app-status" class="sr-only" role="status" aria-live="polite"></div>
+  <main id="app"></main>
+  <footer>
+    <div class="wrap footer-grid">
+      <div class="footer-brand"><img src="assets/logo-mark.jpg" alt="Eco2go Vietnam"><p>Natural materials.<br><em>Better living.</em></p></div>
+      <div><span class="footer-label" data-i18n="footer.contact">Liên hệ</span><a href="tel:+84911585628">+84 911 585 628</a><a href="mailto:jeny@eco2go.vn">jeny@eco2go.vn</a><a href="https://eco2go.vn" target="_blank" rel="noopener noreferrer">eco2go.vn ↗</a></div>
+      <div><span class="footer-label" data-i18n="footer.catalog">Danh mục</span><a href="#products" data-i18n="footer.tableware">Tableware từ gáo dừa</a><a href="#products" data-i18n="footer.growing">Growing media từ xơ dừa</a><a href="#products" data-i18n="footer.landscape">Giải pháp cảnh quan</a></div>
     </div>
-    <div>
-      <h4>Điều hướng</h4>
-      <ul>
-        <li><a href="#home">Trang chủ</a></li>
-        <li><a href="#products">Danh sách sản phẩm</a></li>
-        <li><a href="#about">Về chúng tôi</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="wrap bottom">
-    <span>© 2026 Eco2go Vietnam. Sản phẩm thiên nhiên, xuất khẩu toàn cầu.</span>
-    <span>Thiết kế lấy cảm hứng từ gáo dừa &amp; xơ dừa Việt Nam.</span>
-  </div>
-</footer>
-
-<!-- product database -->
-<script src="products.js"></script>
-<!-- rendering, routing and app logic -->
-<script src="app.js"></script>
+    <div class="wrap footer-bottom"><span>© 2026 Eco2go Vietnam</span><span data-i18n="footer.origin">Made in Vietnam · Shipped worldwide</span></div>
+  </footer>
+  <script src="admin.config.js"></script>
+  <script src="products.js"></script>
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
